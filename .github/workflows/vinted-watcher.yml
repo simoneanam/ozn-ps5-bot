@@ -1,4 +1,4 @@
-name: Vinted watcher
+name: Ozon Vinted watcher
 
 on:
   schedule:
