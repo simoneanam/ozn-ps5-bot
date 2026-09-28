@@ -1,4 +1,4 @@
-# Vinted watcher
+# Ozon Vinted Bot
 
 Monitora nuovi annunci Vinted e invia notifiche su Telegram. Ogni esecuzione
 esegue una sola scansione; GitHub Actions la avvia ogni 5 minuti. Lo stato degli
