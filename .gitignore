@@ -1,0 +1,9 @@
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+*.py[cod]
+.vinted-cookies/
+.idea/
+.DS_Store

@@ -1,0 +1,44 @@
+name: Vinted watcher
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Same group for manual/scheduled runs and all branches of this repository.
+concurrency:
+  group: vinted-watcher
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: '0.12.17'
+          python-version: '3.12'
+          enable-cache: true
+      - name: Install dependencies
+        run: uv sync --locked
+      - name: Scan Vinted once
+        run: uv run --locked python vinted_watch.py
+        env:
+          PYTHONUNBUFFERED: '1'
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
+          UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+          VINTED_SEARCH_TEXT: ${{ vars.VINTED_SEARCH_TEXT || 'ps5' }}
+          VINTED_PRICE_FROM: ${{ vars.VINTED_PRICE_FROM || '300' }}
+          VINTED_PRICE_TO: ${{ vars.VINTED_PRICE_TO || '450' }}
+          VINTED_PER_PAGE: ${{ vars.VINTED_PER_PAGE || '20' }}
+          VINTED_REQUIRE_PHOTO: ${{ vars.VINTED_REQUIRE_PHOTO || '1' }}
+          VINTED_EXCLUDED_TERMS: ${{ vars.VINTED_EXCLUDED_TERMS }}
+          VINTED_REDIS_PREFIX: ${{ vars.VINTED_REDIS_PREFIX || 'vinted:ps5' }}
+          VINTED_SEEN_RETENTION_DAYS: ${{ vars.VINTED_SEEN_RETENTION_DAYS || '30' }}
